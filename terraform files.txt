@@ -1,0 +1,61 @@
+
+3. Test the environment by creating a simple virtual machine
+
+
+Created new server using terraform :
+
+touch main.tf output.tf provider.tf variables.tf terraform.tfvars
+
+variable.tf :
+
+variable "project" {
+  description = "The Capstone project"
+  type        = string
+}
+variable "region" {
+  description = "The AWS region to deploy resources in"
+  type        = string
+  default     = "us-east-1"
+}
+
+Provider.tf :
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "4.36.1"
+    }
+  }
+}
+
+provider "aws" {
+  region  = var.region
+}
+
+terraform.tfvars :
+
+project = "project-test-server"
+region = "us-east-1"
+
+main.tf :
+
+resource "aws_instance" "vm" {  
+  ami           = "ami-0be2609ba883822ec"
+  instance_type = "t2.medium"
+
+  tags = {
+    Name = "${var.project}-vm"
+  }
+}
+
+Output.tf :
+
+output "public_ip_address" {
+  value       = aws_instance.vm.public_ip
+  description = "The public IP address of the server."
+}
+
+
+
+
